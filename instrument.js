@@ -12,6 +12,8 @@ Sentry.init({
 Sentry.getClient().on('beforeEnvelope', envelope => {
   for (const [header, payload] of envelope[1]) {
     if (header.type === 'span') {
+      console.log('[FULL span envelope header]', stringify(header));
+      console.log('[FULL span envelope payload]', stringify(payload));
       for (const span of payload.items || []) {
         const attrs = pickTestAttrs(span.attributes);
         if (hasKeys(attrs)) {
