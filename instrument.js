@@ -5,8 +5,6 @@ Sentry.init({
   tracesSampleRate: 1.0,
   enableLogs: true,
   sendDefaultPii: true,
-  traceLifecycle: 'stream',
-  integrations: [Sentry.spanStreamingIntegration()],
 });
 
 Sentry.getClient().on('beforeEnvelope', envelope => {
@@ -18,6 +16,19 @@ Sentry.getClient().on('beforeEnvelope', envelope => {
         const attrs = pickTestAttrs(span.attributes);
         if (hasKeys(attrs)) {
           console.log('[envelope span]', span.name, stringify(attrs));
+        }
+      }
+    } else if (header.type === 'transaction') {
+      console.log('[FULL transaction envelope header]', stringify(header));
+      console.log('[FULL transaction envelope payload]', stringify(payload));
+      const rootAttrs = pickTestAttrs(payload.contexts?.trace?.data);
+      if (hasKeys(rootAttrs)) {
+        console.log('[envelope transaction root]', payload.transaction, stringify(rootAttrs));
+      }
+      for (const span of payload.spans || []) {
+        const attrs = pickTestAttrs(span.data);
+        if (hasKeys(attrs)) {
+          console.log('[envelope transaction span]', span.description, stringify(attrs));
         }
       }
     } else if (header.type === 'log') {
