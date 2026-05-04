@@ -5,6 +5,7 @@ Sentry.init({
   tracesSampleRate: 1.0,
   enableLogs: true,
   sendDefaultPii: true,
+  traceLifecycle: 'stream',
 });
 
 Sentry.getClient().on('beforeEnvelope', envelope => {
